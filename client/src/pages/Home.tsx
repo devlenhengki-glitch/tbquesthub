@@ -190,10 +190,13 @@ export default function Home() {
 
       <main id="top">
         <section className="hero-section">
-          <div className="hero-copy hero-copy-centered">
+          <div className="hero-banner">
+            <div className="hero-copy hero-copy-banner">
             <div className="eyebrow"><span className="eyebrow-rule" /> ACADEMIC DIVISION PICKS</div>
             <h1 className="poster-hero-title">Most wanted.<br /><em>Worth joining.</em></h1>
             <p className="hero-description">The latest competitions, collected in one place. Find a flyer that sparks something.</p>
+            </div>
+            <span className="hero-star" aria-hidden="true">✦</span>
           </div>
           <div className="registration-notice" role="note">
             <p>Before joining any of these competitions, please fill the following form: <a href="https://bit.ly/48GwrMu" target="_blank" rel="noopener noreferrer">https://bit.ly/48GwrMu</a></p>

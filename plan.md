@@ -2,7 +2,7 @@
 
 ## Product and implementation
 
-A responsive student-facing board presents the latest competitions discovered by the Student Council Academic Division. Each listing includes the competition title, description, deadline, and flyer. Listings persist between visits in the project's managed MySQL database and are ordered with current opportunities first, followed by expired listings.
+A responsive student-facing board presents the latest competitions discovered by the Student Council Academic Division. Each listing includes the competition title, description, deadline, and flyer. Listings persist between visits in the project's managed MySQL database and are ordered with current opportunities first, followed by expired listings. The homepage visual direction shifts to the user's campus-tech reference: a dark navy-and-blue campus hero above cool pale-blue competition sections, while preserving the working board, sticky reminders, and Academic Division editor.
 
 Immediately before the homepage poster carousel, display the exact form notice “Before joining any of these competitions, please fill the following form: https://bit.ly/48GwrMu” with a clickable URL. Beneath it, show two equally sized yellow sticky notes with visible red pushpins in a responsive row: the permission-letter reminder and a second team-contact note. The contact note says “MEET THE ACADEMIC TEAM”, “Contact Us:”, “0819-7757-0007 (Aaron)”, “0816-1866-635 (Enzo)”, “0815-1919-2108 (Nathan)”, and “0857-7575-9510 (William)” on separate lines; its heading is bold and its body text is larger. The permission note text matches the contact note body size, with only “CONTACT THE ACADEMIC TEAM 1-2 weeks before the competition registration ends” bolded.
 
@@ -25,25 +25,20 @@ The project uses its initialized React/TypeScript frontend, Express/tRPC server,
 
 ## Design direction
 
-Three uncommon candidates (low prior likelihoods):
-- **Collegiate field notes** — archival academic typography with warm paper and vivid botanical green; probability 0.07.
-- **Neon competition circuit** — dark electronic scoreboard with electric cyan highlights; probability 0.04.
-- **Playful cut-paper campus zine** — layered paper shapes, hand-stamped marks, and bright primary accents; probability 0.02.
+**Chosen style: Modern campus-tech showcase, guided by the supplied reference.**
 
-**Chosen style: Collegiate field notes.**
-
-- **Design Movement:** contemporary editorial inspired by university journals, library cards, and annotated field guides.
-- **Core Principles:** make deadlines immediately scannable; keep the board welcoming and calm; treat every flyer as authentic source material; keep editing actions unmistakably separate from student browsing.
-- **Color Philosophy:** use a bright, mostly white canvas with dark ink and fresh green interface accents; let the uploaded competition flyers supply the strong colors and visual variety.
-- **Layout Paradigm:** lead with a centered headline and a wide, horizontal row of large portrait competition posters that float across the homepage; place the complete indexed listings and filters below.
-- **Signature Elements:** rounded flyer posters; readable dark-gradient title captions over each poster; a softly floating, horizontally scrollable row that hints at more competitions off-screen.
+- **Design Movement:** contemporary student-technology landing page with a bold campus hero and crisp competition marketplace cards.
+- **Core Principles:** create a strong first-screen campus identity; keep text readable over the hero; use bright blue for calls to action; retain warm sticky-note reminders and clear editor separation.
+- **Color Philosophy:** use deep navy and cobalt in the hero for focus and ambition, then shift to cool pale blue-gray content sections for calm scanning; preserve the warm yellow reminders as high-contrast practical notes.
+- **Layout Paradigm:** a full-width split hero places the headline and copy on the left and an original campus-building image on the right; the poster carousel and full competition index follow on a light background.
+- **Signature Elements:** wide twilight campus photograph; translucent diagonal blue geometry and a subtle star glint; floating flyer cards with cool blue surfaces and strong contrast.
 - **Interaction Philosophy:** students can swipe or scroll through posters, then jump to a listing for its full description and deadline; password entry and publication remain deliberate, and deletion is available only to authenticated editors for uploaded listings.
-- **Animation:** cards bob gently at staggered intervals and lift slightly on hover; respect reduced-motion preferences and keep titles legible over poster art.
-- **Typography System:** use a confident editorial serif for the main headline and competition titles, paired with a neutral sans-serif for descriptions, dates, controls, and interface labels; establish clear title, section, body, and caption tiers.
-- **Brand Essence:** the Student Council's reliable field guide to the next chance to compete; **curious, organized, encouraging**.
-- **Brand Voice:** concise and student-minded. Example lines: “Find your next challenge.” “Deadlines at a glance. Opportunities in reach.”
-- **Wordmark & Logo:** compact monogram combining an open-book outline with a sprouting leaf, used as a small section mark alongside the board name.
-- **Signature Brand Color:** leaf green, used consistently for active opportunity markers and the Academic Division identity.
+- **Animation:** keep the existing gentle poster float and hover lift; use only a restrained background shimmer, respect reduced-motion preferences, and avoid motion that competes with the hero copy.
+- **Typography System:** use bold, oversized DM Sans for the hero headline and neutral sans-serif for descriptions, dates, controls, and interface labels; maintain clear section, body, and caption tiers.
+- **Brand Essence:** the Student Council's reliable guide to the next chance to compete; **ambitious, clear, student-minded**.
+- **Brand Voice:** concise and optimistic. Example lines: “Discover. Compete. Achieve.” “Find your next challenge.”
+- **Wordmark & Logo:** retain the current open-book mark and Opportunity Index wordmark, recolored to the cobalt/navy palette.
+- **Signature Brand Color:** cobalt blue, used for emphasis, active navigation, and primary calls to action.
 
 ## Material constraints
 
