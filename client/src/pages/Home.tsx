@@ -198,9 +198,22 @@ export default function Home() {
           <div className="registration-notice" role="note">
             <p>Before joining any of these competitions, please fill the following form: <a href="https://bit.ly/48GwrMu" target="_blank" rel="noopener noreferrer">https://bit.ly/48GwrMu</a></p>
           </div>
-          <div className="permission-sticky-note" role="note">
-            <span className="permission-note-pin" aria-hidden="true" />
-            <p>Note: Keep in mind, if a competition requires a permission letter (surat keterangan), <strong>CONTACT THE ACADEMIC TEAM 1-2 weeks before the competition registration ends</strong></p>
+          <div className="sticky-note-row" aria-label="Academic team reminders">
+            <div className="pinned-sticky-note permission-sticky-note" role="note">
+              <span className="sticky-note-pin" aria-hidden="true" />
+              <p>Note: Keep in mind, if a competition requires a permission letter (surat keterangan), <strong>CONTACT THE ACADEMIC TEAM 1-2 weeks before the competition registration ends</strong></p>
+            </div>
+            <div className="pinned-sticky-note contact-sticky-note" role="note">
+              <span className="sticky-note-pin" aria-hidden="true" />
+              <h2>MEET THE ACADEMIC TEAM</h2>
+              <p className="contact-note-label">Contact Us:</p>
+              <ul className="contact-note-list">
+                <li>0819-7757-0007 (Aaron)</li>
+                <li>0816-1866-635 (Enzo)</li>
+                <li>0815-1919-2108 (Nathan)</li>
+                <li>0857-7575-9510 (William)</li>
+              </ul>
+            </div>
           </div>
           <section className="poster-carousel" aria-label="Latest competition flyers">
             {competitionsQuery.isLoading ? (
