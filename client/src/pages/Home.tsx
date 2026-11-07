@@ -11,6 +11,7 @@ import {
   LockKeyhole,
   LogOut,
   Plus,
+  Trash2,
   UploadCloud,
   X,
 } from "lucide-react";
@@ -53,7 +54,8 @@ export default function Home() {
   const utils = trpc.useUtils();
   const competitionsQuery = trpc.competitions.list.useQuery();
   const editorStatusQuery = trpc.competitions.editorStatus.useQuery();
-  const [loginOpen, setLoginOpen] = useState(false);
+  const [editorModalOpen, setEditorModalOpen] = useState(false);
+  const [editorModalView, setEditorModalView] = useState<"login" | "form" | "removal">("login");
   const [password, setPassword] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -73,19 +75,23 @@ export default function Home() {
   }, [selectedFile]);
 
   useEffect(() => {
-    if (!loginOpen) return;
+    if (!editorModalOpen) return;
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setLoginOpen(false);
+      if (event.key === "Escape") setEditorModalOpen(false);
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [loginOpen]);
+  }, [editorModalOpen]);
 
   const loginMutation = trpc.competitions.login.useMutation({
     onSuccess: async () => {
       setPassword("");
-      setLoginOpen(false);
-      await editorStatusQuery.refetch();
+      const status = await editorStatusQuery.refetch();
+      if (!status.data?.editor) {
+        toast.error("The editor session could not be confirmed. Please try again.");
+        return;
+      }
+      setEditorModalView("form");
       toast.success("Academic Mode is on.");
     },
     onError: error => toast.error(error.message),
@@ -93,6 +99,8 @@ export default function Home() {
   const logoutMutation = trpc.competitions.logout.useMutation({
     onSuccess: async () => {
       await editorStatusQuery.refetch();
+      setEditorModalOpen(false);
+      setEditorModalView("login");
       toast.success("You’re back in visitor mode.");
     },
     onError: error => toast.error(error.message),
@@ -104,6 +112,8 @@ export default function Home() {
       setDeadline("");
       setSelectedFile(null);
       await utils.competitions.list.invalidate();
+      setEditorModalOpen(false);
+      setEditorModalView("form");
       toast.success("Competition added to the board.");
     },
     onError: error => toast.error(error.message),
@@ -119,6 +129,7 @@ export default function Home() {
   const editor = editorStatusQuery.data?.editor === true;
   const competitions = (competitionsQuery.data ?? []) as Competition[];
   const now = todayUtc();
+  const expiredCompetitions = competitions.filter(item => item.deadline < now);
   const activeCount = competitions.filter(item => item.deadline >= now).length;
   const pastCount = competitions.length - activeCount;
   const featuredCompetitions = competitions.slice(0, 12);
@@ -166,12 +177,12 @@ export default function Home() {
           {editor ? (
             <>
               <span className="mode-pill"><span /> ACADEMIC MODE</span>
-              <button className="button button-quiet header-button" onClick={() => logoutMutation.mutate()} disabled={logoutMutation.isPending}>
-                <LogOut size={15} /> Exit Academic Mode
+              <button className="button button-dark header-button" onClick={() => { setEditorModalView("form"); setEditorModalOpen(true); }}>
+                <Plus size={15} /> Editor Desk
               </button>
             </>
           ) : (
-            <button className="button button-dark header-button" onClick={() => setLoginOpen(true)}>
+            <button className="button button-dark header-button" onClick={() => { setEditorModalView("login"); setEditorModalOpen(true); }}>
               <LockKeyhole size={15} /> Academic Division Login
             </button>
           )}
@@ -260,7 +271,7 @@ export default function Home() {
                 <span>Past deadline</span><span>{pastCount.toString().padStart(2, "0")}</span>
               </button>
               <div className="rail-note"><span className="rail-note-icon"><CalendarDays size={16} /></span><p>Keep an eye on the deadline. Every great entry starts with showing up.</p></div>
-              {editor && <a className="rail-add-link" href="#add-competition"><Plus size={15} /> Add a competition</a>}
+              {editor && <button className="rail-add-link" onClick={() => { setEditorModalView("form"); setEditorModalOpen(true); }}><Plus size={15} /> Add a competition</button>}
             </aside>
 
             <div className="competition-feed">
@@ -274,7 +285,7 @@ export default function Home() {
                   <span className="empty-icon"><BookOpen size={25} strokeWidth={1.5} /></span>
                   <div className="empty-kicker">NOTHING ON THIS PAGE—YET</div>
                   <h3>{activeFilter === "past" ? "No past deadlines." : activeFilter === "open" ? "No open competitions right now." : "The next opportunity is just around the corner."}</h3>
-                  <p>{editor ? "Add a competition above and students will find it here." : "The Academic Division is always looking. Check back for the next find."}</p>
+                  <p>{editor ? "Open the Editor Desk to add a listing, and students will find it here." : "The Academic Division is always looking. Check back for the next find."}</p>
                   {activeFilter !== "all" && <button className="text-button" onClick={() => setActiveFilter("all")}>View all competitions <ChevronRight size={15} /></button>}
                 </div>
               ) : (
@@ -296,7 +307,6 @@ export default function Home() {
                             <p className="competition-description">{competition.description}</p>
                             <div className="card-footer">
                               <span className="posted-date"><Clock3 size={13} /> ADDED {new Intl.DateTimeFormat("en", { month: "short", day: "numeric" }).format(new Date(competition.createdAt))}</span>
-                              {editor && expired && <button className="delete-button" onClick={() => removeCompetition(competition)} disabled={deleteMutation.isPending}><X size={14} /> Remove expired</button>}
                             </div>
                           </div>
                         </div>
@@ -306,9 +316,54 @@ export default function Home() {
                 </div>
               )}
 
-              {editor && <section className="add-panel" id="add-competition">
-                <div className="add-panel-heading"><span className="add-panel-icon"><Plus size={17} /></span><div><div className="eyebrow"><span className="eyebrow-rule" /> EDITOR DESK</div><h3>Add an opportunity</h3><p>Share the details students need to take the next step.</p></div></div>
-                <form className="competition-form" onSubmit={handleSubmit}>
+            </div>
+          </div>
+        </section>
+
+      <section className="closing-note"><div className="closing-mark"><Leaf size={22} /></div><p>Made for the ones who are <em>ready to try.</em></p><span>STUDENT COUNCIL · ACADEMIC DIVISION</span></section>
+      </main>
+      <footer className="site-footer"><span>THE OPPORTUNITY INDEX</span><span>One good opportunity can change everything.</span><a href="#top">BACK TO TOP <ChevronRight size={13} className="back-arrow" /></a></footer>
+
+      {editorModalOpen && <div className="modal-scrim" onMouseDown={event => { if (event.target === event.currentTarget) setEditorModalOpen(false); }}>
+        <section className={`login-dialog ${editor ? "editor-dialog" : ""}`} role="dialog" aria-modal="true" aria-labelledby={editor ? "editor-modal-title" : "login-title"}>
+          <button className="modal-close" aria-label={editor ? "Close editor modal" : "Close login dialog"} onClick={() => setEditorModalOpen(false)}><X size={18} /></button>
+          {editor ? (
+            <>
+              <div className="editor-modal-heading">
+                <div className="dialog-emblem"><BookOpen size={23} /><Leaf size={13} /></div>
+                <div className="editor-modal-heading-copy">
+                  <div className="eyebrow"><span className="eyebrow-rule" /> ACADEMIC MODE · EDITOR DESK</div>
+                  <h2 id="editor-modal-title">{editorModalView === "removal" ? <>Clear a past<br /><em>opportunity.</em></> : <>Share a new<br /><em>competition.</em></>}</h2>
+                  <p>{editorModalView === "removal" ? "Only competitions with passed deadlines can be removed." : "Add the flyer and details students need to take the next step."}</p>
+                </div>
+                <button className="button button-quiet removal-open-button" type="button" onClick={() => setEditorModalView(editorModalView === "removal" ? "form" : "removal")}>
+                  {editorModalView === "removal" ? <ArrowRight size={15} className="back-arrow" /> : <Trash2 size={15} />}
+                  {editorModalView === "removal" ? "Back to form" : "Removal"}
+                </button>
+              </div>
+
+              {editorModalView === "removal" ? (
+                <div className="removal-view">
+                  {expiredCompetitions.length ? (
+                    <ul className="removal-list">
+                      {expiredCompetitions.map(competition => (
+                        <li className="removal-item" key={competition.id}>
+                          <img src={competition.flyerUrl} alt="" loading="lazy" />
+                          <div className="removal-item-copy"><span>PAST DEADLINE · {formatDate(competition.deadline)}</span><strong>{competition.title}</strong></div>
+                          <button className="delete-button" onClick={() => removeCompetition(competition)} disabled={deleteMutation.isPending}><Trash2 size={14} /> Remove</button>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <div className="removal-empty"><span className="empty-icon"><Check size={22} /></span><h3>Nothing to remove.</h3><p>Competitions will appear here after their deadlines have passed.</p></div>
+                  )}
+                  <div className="editor-modal-footer">
+                    <span>Removal is limited to past-deadline listings.</span>
+                    <button className="button button-quiet" type="button" onClick={() => logoutMutation.mutate()} disabled={logoutMutation.isPending}><LogOut size={15} /> {logoutMutation.isPending ? "Exiting…" : "Exit Academic Mode"}</button>
+                  </div>
+                </div>
+              ) : (
+                <form className="competition-form editor-competition-form" onSubmit={handleSubmit}>
                   <div className="form-row form-row-two">
                     <label className="form-field"><span>Competition title <i>REQUIRED</i></span><input required maxLength={140} value={title} onChange={event => setTitle(event.target.value)} placeholder="e.g. National Science Challenge" /></label>
                     <label className="form-field"><span>Registration deadline <i>REQUIRED</i></span><input type="date" required min={todayUtc()} value={deadline} onChange={event => setDeadline(event.target.value)} /></label>
@@ -318,29 +373,29 @@ export default function Home() {
                     <label className="form-field flyer-field"><span>Competition flyer <i>REQUIRED</i></span><span className="upload-control"><input type="file" accept="image/png,image/jpeg,image/webp" required={!selectedFile} onChange={event => setSelectedFile(event.target.files?.[0] ?? null)} /><span className="upload-icon"><UploadCloud size={18} /></span><span className="upload-copy"><b>{selectedFile ? selectedFile.name : "Choose a flyer image"}</b><small>PNG, JPG or WebP · up to 8 MB</small></span><span className="upload-action">BROWSE</span></span></label>
                     {previewUrl && <div className="upload-preview"><img src={previewUrl} alt="Preview of the selected flyer" /><button type="button" aria-label="Remove selected flyer" onClick={() => setSelectedFile(null)}><X size={14} /></button></div>}
                   </div>
-                  <div className="form-actions"><span>New listings appear immediately on the student board.</span><button className="button button-green" type="submit" disabled={createMutation.isPending}>{createMutation.isPending ? "Publishing…" : "Publish competition"}<ArrowRight size={16} /></button></div>
+                  <div className="editor-modal-footer">
+                    <span>New listings appear immediately on the student board.</span>
+                    <div className="editor-modal-footer-actions">
+                      <button className="button button-quiet" type="button" onClick={() => logoutMutation.mutate()} disabled={logoutMutation.isPending}><LogOut size={15} /> {logoutMutation.isPending ? "Exiting…" : "Exit Academic Mode"}</button>
+                      <button className="button button-green" type="submit" disabled={createMutation.isPending}>{createMutation.isPending ? "Publishing…" : "Publish competition"}<ArrowRight size={16} /></button>
+                    </div>
+                  </div>
                 </form>
-              </section>}
-            </div>
-          </div>
-        </section>
-
-        <section className="closing-note"><div className="closing-mark"><Leaf size={22} /></div><p>Made for the ones who are <em>ready to try.</em></p><span>STUDENT COUNCIL · ACADEMIC DIVISION</span></section>
-      </main>
-      <footer className="site-footer"><span>THE OPPORTUNITY INDEX</span><span>One good opportunity can change everything.</span><a href="#top">BACK TO TOP <ChevronRight size={13} className="back-arrow" /></a></footer>
-
-      {loginOpen && <div className="modal-scrim" onMouseDown={event => { if (event.target === event.currentTarget) setLoginOpen(false); }}>
-        <section className="login-dialog" role="dialog" aria-modal="true" aria-labelledby="login-title">
-          <button className="modal-close" aria-label="Close login dialog" onClick={() => setLoginOpen(false)}><X size={18} /></button>
-          <div className="dialog-emblem"><BookOpen size={23} /><Leaf size={13} /></div>
-          <div className="eyebrow"><span className="eyebrow-rule" /> EDITOR ACCESS</div>
-          <h2 id="login-title">A note from the<br /><em>Academic Division.</em></h2>
-          <p>Enter the division passcode to add new opportunities and tidy the board.</p>
-          <form onSubmit={event => { event.preventDefault(); loginMutation.mutate({ password }); }}>
-            <label className="form-field"><span>Division passcode</span><input autoFocus type="password" autoComplete="current-password" required value={password} onChange={event => setPassword(event.target.value)} placeholder="Enter passcode" /></label>
-            <button className="button button-green dialog-submit" type="submit" disabled={loginMutation.isPending}>{loginMutation.isPending ? "Checking…" : "Enter Academic Mode"}<ArrowRight size={16} /></button>
-          </form>
-          <div className="dialog-footnote"><LockKeyhole size={13} /> This space is for Academic Division editors.</div>
+              )}
+            </>
+          ) : (
+            <>
+              <div className="dialog-emblem"><BookOpen size={23} /><Leaf size={13} /></div>
+              <div className="eyebrow"><span className="eyebrow-rule" /> EDITOR ACCESS</div>
+              <h2 id="login-title">A note from the<br /><em>Academic Division.</em></h2>
+              <p>Enter the division passcode to add new opportunities and manage past competitions.</p>
+              <form onSubmit={event => { event.preventDefault(); loginMutation.mutate({ password }); }}>
+                <label className="form-field"><span>Division passcode</span><input autoFocus type="password" autoComplete="current-password" required value={password} onChange={event => setPassword(event.target.value)} placeholder="Enter passcode" /></label>
+                <button className="button button-green dialog-submit" type="submit" disabled={loginMutation.isPending}>{loginMutation.isPending ? "Checking…" : "Enter Academic Mode"}<ArrowRight size={16} /></button>
+              </form>
+              <div className="dialog-footnote"><LockKeyhole size={13} /> This space is for Academic Division editors.</div>
+            </>
+          )}
         </section>
       </div>}
     </div>

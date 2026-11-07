@@ -8,7 +8,8 @@
 
 ## Academic Division editor access and publishing
 - [x] The website has a button that says “Academic Division Login”; it accepts the supplied passcode through a protected server-only project secret and restricts uploads to the Academic Division.
-- [x] After someone fills the password, they can upload an image of the competition's flyer and input the description, deadline, and competition title.
+- [x] After the correct password is entered, the password modal stays open and transitions into an editor form modal with fields for the competition flyer image, description, competition title, and deadline.
+- [x] The editor form modal includes a button labeled “Removal”; it opens removal controls for competitions that have already gone by.
 - [x] After a competition is submitted, it appears on the visitor-facing website.
 - [x] The editor can select “Exit Academic Mode” to go back to becoming a visitor of the site.
 

@@ -39,6 +39,7 @@ function cookieOptions(origin: string | undefined) {
     httpOnly: true,
     secure: !localHttp,
     sameSite: localHttp ? "lax" as const : "none" as const,
+    partitioned: !localHttp,
     path: "/",
     maxAge: SESSION_TTL_MS,
   };
