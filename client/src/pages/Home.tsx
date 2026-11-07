@@ -351,9 +351,9 @@ export default function Home() {
       <section className="about-section" aria-labelledby="about-heading">
         <div className="about-panel">
           <div className="about-copy">
-            <div className="about-kicker"><span aria-hidden="true" />About NEXUS</div>
+            <div className="about-kicker"><span aria-hidden="true" />About TB QuestHub</div>
             <h2 id="about-heading">A platform by students,<br />for students.</h2>
-            <p>NEXUS is an initiative by the Student Council Academic Division to connect students with opportunities beyond the classroom.</p>
+            <p>TB QuestHub is an initiative by the Student Council Academic Division to connect students with opportunities beyond the classroom.</p>
             <button className="about-mission" type="button" aria-haspopup="dialog" aria-expanded={missionOpen} onClick={() => setMissionOpen(true)}>Our Mission <ArrowRight size={14} /></button>
           </div>
           <div className="about-illustration" aria-hidden="true">
