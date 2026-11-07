@@ -6,6 +6,7 @@
 - [x] Each competition shows its uploaded flyer image, competition title, description, and deadline.
 - [x] Competition entries persist so students can see the board across visits.
 - [x] Immediately before the homepage poster carousel, display the text “Before joining any of these competitions, please fill the following form: https://bit.ly/48GwrMu” and make the supplied URL clickable.
+- [x] Beside the form notice, display: “Note: Keep in mind, if a competition requires a permission letter (surat keterangan), CONTACT THE ACADEMIC TEAM 1-2 weeks before the competition registration ends”. Bold exactly “CONTACT THE ACADEMIC TEAM 1-2 weeks before the competition registration ends”.
 
 ## Academic Division editor access and publishing
 - [x] The website has a button that says “Academic Division Login”; it accepts the supplied passcode through a protected server-only project secret and restricts uploads to the Academic Division.

@@ -195,7 +195,10 @@ export default function Home() {
             <h1 className="poster-hero-title">Most wanted.<br /><em>Worth joining.</em></h1>
             <p className="hero-description">The latest competitions, collected in one place. Find a flyer that sparks something.</p>
           </div>
-          <p className="registration-notice">Before joining any of these competitions, please fill the following form: <a href="https://bit.ly/48GwrMu" target="_blank" rel="noopener noreferrer">https://bit.ly/48GwrMu</a></p>
+          <div className="registration-notice" role="note">
+            <p>Before joining any of these competitions, please fill the following form: <a href="https://bit.ly/48GwrMu" target="_blank" rel="noopener noreferrer">https://bit.ly/48GwrMu</a></p>
+            <p>Note: Keep in mind, if a competition requires a permission letter (surat keterangan), <strong>CONTACT THE ACADEMIC TEAM 1-2 weeks before the competition registration ends</strong></p>
+          </div>
           <section className="poster-carousel" aria-label="Latest competition flyers">
             {competitionsQuery.isLoading ? (
               <div className="poster-empty-state"><span className="loading-mark" />Gathering the latest flyers…</div>
