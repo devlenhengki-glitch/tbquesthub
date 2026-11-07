@@ -345,7 +345,7 @@ export default function Home() {
           </div>
         </section>
 
-      <section className="closing-note"><div className="closing-mark"><Leaf size={22} /></div><p>Made for the ones who are <em>ready to try.</em></p><span>STUDENT COUNCIL · ACADEMIC DIVISION</span></section>
+      <section className="closing-note"><div className="closing-mark"><Leaf size={22} /></div><p>Where Potential Meets <em>Opportunity</em></p><span>STUDENT COUNCIL · ACADEMIC DIVISION</span></section>
 
       <section className="about-section" aria-labelledby="about-heading">
         <div className="about-panel">

@@ -39,7 +39,7 @@ The project uses its initialized React/TypeScript frontend, Express/tRPC server,
 - **Animation:** keep the existing gentle poster float and hover lift; use only a restrained background shimmer, respect reduced-motion preferences, and avoid motion that competes with the hero copy.
 - **Typography System:** use bold, oversized DM Sans for the hero headline and neutral sans-serif for descriptions, dates, controls, and interface labels; maintain clear section, body, and caption tiers.
 - **Brand Essence:** the Student Council's reliable guide to the next chance to compete; **ambitious, clear, student-minded**.
-- **Brand Voice:** concise and optimistic. Example lines: “Discover. Compete. Achieve.” “Find your next challenge.”
+- **Brand Voice:** concise and optimistic. Example lines: “Where Potential Meets Opportunity” and “Find your next challenge.”
 - **Wordmark & Logo:** use the supplied TB QuestHub compass-and-wordmark artwork, remove its white background, and recolor it in high-contrast white/cobalt for the navy site header; use a navy/cobalt variant for the browser icon and project-logo metadata. Place the supplied school seal in its original colors as a compact secondary mark within the About illustration area.
 - **Signature Brand Color:** cobalt blue, used for emphasis, active navigation, and primary calls to action.
 
