@@ -4,21 +4,21 @@
 
 A responsive student-facing board presents the latest competitions discovered by the Student Council Academic Division. Each listing includes the competition title, description, deadline, and flyer. Listings persist between visits in the project's managed MySQL database and are ordered with current opportunities first, followed by expired listings.
 
-Academic Division Login opens a password form for the supplied passcode (the supplied passcode, held in a protected environment secret). The credential is verified by the server using a protected project environment value; it is not embedded in browser code. A short-lived, signed, HttpOnly editor-session cookie protects create, upload, and delete operations. Cookie attributes support the public HTTPS Preview iframe (`SameSite=None; Secure`) while allowing plain HTTP local development. Exit Academic Mode clears the editor session. As with any shared passcode, anyone who knows it can edit, so it should be shared only with division members.
+Academic Division Login opens a password form for the supplied passcode. The credential is verified by the server using a protected project environment value; it is not embedded in browser code. Successful login issues a short-lived HttpOnly cookie containing a random opaque token; only its SHA-256 hash and expiry are stored in an additive managed-database session table, so editor access survives process restarts and multiple server instances. Cookie attributes support the public HTTPS Preview iframe (`SameSite=None; Secure`) while allowing plain HTTP local development. Exit Academic Mode revokes the stored editor session and clears the cookie. As with any shared passcode, anyone who knows it can edit, so it should be shared only with division members.
 
 Authorized editors can submit a title, description, deadline, and flyer image. The server validates inputs, image type and size, verifies the editor session, uploads the image to project object storage, and then stores the stable flyer address alongside the listing. The board exposes only public competition information. In Academic Mode, editors can delete entries only after their deadline has passed; the server also checks the deadline so the restriction cannot be bypassed from the interface. Deletion removes the competition record from the board; it does not claim to erase the stored image bytes.
 
-The project uses its initialized React/TypeScript frontend, Express/tRPC server, Drizzle ORM, and managed database. A protected environment secret will supply the password to the backend. The project storage API will provide stable `/manus-storage/...` image paths.
+The project uses its initialized React/TypeScript frontend, Express/tRPC server, Drizzle ORM, and managed database. A protected environment secret supplies the password to the backend. The project storage API provides stable `/manus-storage/...` image paths.
 
 ## Project structure
 
 - `client/src/pages/Home.tsx`: public board, responsive competition list, Academic Division Login, editor form and exit mode.
 - `client/src/index.css`: visual system and responsive layout.
 - `client/src/App.tsx`: existing single-page route remains the home board.
-- `server/routers.ts` and a focused competition router/module: public list, password verification, session exit, image upload and authorized create/delete procedures.
-- `server/db.ts`: competition queries and persistence.
-- `drizzle/schema.ts` and `drizzle/`: competition table and additive migration, with title, description, deadline, flyer address, and timestamps.
-- `public/manus-routes.json`: current route manifest for the home page.
+- `server/routers.ts` and `server/competitionRouter.ts`: public list, password verification, session exit, image upload, and authorized create/delete procedures.
+- `server/db.ts`: competition queries and persistence, plus editor-session persistence.
+- `drizzle/schema.ts` and `drizzle/`: competition and editor-session tables with additive migrations; competition title, description, deadline, flyer address, timestamps, and hashed session tokens with expiry.
+- `client/public/manus-routes.json`: current route manifest for the home page.
 - `plan.md` and `TODO.md`: implementation decisions and delivery status.
 
 ## Design direction
