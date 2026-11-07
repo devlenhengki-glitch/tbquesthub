@@ -343,6 +343,29 @@ export default function Home() {
         </section>
 
       <section className="closing-note"><div className="closing-mark"><Leaf size={22} /></div><p>Made for the ones who are <em>ready to try.</em></p><span>STUDENT COUNCIL · ACADEMIC DIVISION</span></section>
+
+      <section className="about-section" aria-labelledby="about-heading">
+        <div className="about-panel">
+          <div className="about-copy">
+            <div className="about-kicker"><span aria-hidden="true" />About NEXUS</div>
+            <h2 id="about-heading">A platform by students,<br />for students.</h2>
+            <p>NEXUS is an initiative by the Student Council Academic Division to connect students with opportunities beyond the classroom.</p>
+            <a className="about-mission" href="#opportunities">Our Mission <ArrowRight size={14} /></a>
+          </div>
+          <div className="about-illustration" aria-hidden="true">
+            <div className="about-illustration-disc" />
+            <img src="/manus-storage/async-images/9cLJc9eR7SiwEiEVcwevcd/image-1.webp" alt="" loading="lazy" />
+          </div>
+          <aside className="about-updates">
+            <h3>Stay Updated</h3>
+            <p>Get the latest competitions delivered to your inbox.</p>
+            <div className="about-email-preview" role="group" aria-label="Email sign-up preview">
+              <span>Enter your email</span>
+              <span className="about-email-arrow" aria-hidden="true"><ArrowRight size={14} /></span>
+            </div>
+          </aside>
+        </div>
+      </section>
       </main>
       <footer className="site-footer"><span>THE OPPORTUNITY INDEX</span><span>One good opportunity can change everything.</span><a href="#top">BACK TO TOP <ChevronRight size={13} className="back-arrow" /></a></footer>
 
