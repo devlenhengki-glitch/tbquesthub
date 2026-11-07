@@ -40,7 +40,7 @@ The project uses its initialized React/TypeScript frontend, Express/tRPC server,
 - **Typography System:** use bold, oversized DM Sans for the hero headline and neutral sans-serif for descriptions, dates, controls, and interface labels; maintain clear section, body, and caption tiers.
 - **Brand Essence:** the Student Council's reliable guide to the next chance to compete; **ambitious, clear, student-minded**.
 - **Brand Voice:** concise and optimistic. Example lines: “Discover. Compete. Achieve.” “Find your next challenge.”
-- **Wordmark & Logo:** retain the current open-book mark and Opportunity Index wordmark, recolored to the cobalt/navy palette.
+- **Wordmark & Logo:** retain the current open-book mark and use the TB QuestHub wordmark, recolored to the cobalt/navy palette.
 - **Signature Brand Color:** cobalt blue, used for emphasis, active navigation, and primary calls to action.
 
 ## Material constraints

@@ -5,6 +5,7 @@
 - [x] The latest competition flyers appear across the top of the homepage as large, floating poster cards in a horizontally scrollable row, similar to the supplied reference; the full listings remain below.
 - [x] Each competition shows its uploaded flyer image, competition title, description, and deadline.
 - [x] Competition entries persist so students can see the board across visits.
+- [x] Replace the “The Opportunity Index” brand name with “TB QuestHub” in the header, footer, browser title, route-manifest title, accessible icon label, and brand documentation.
 - [x] Restyle the homepage to resemble the supplied reference with a deep navy/cobalt split campus hero, campus-building artwork on the right with clear copy space on the left, pale blue-gray content sections, and bright blue accents, while retaining the competition board, sticky notes, and editor.
 - [x] Immediately before the homepage poster carousel, display the text “Before joining any of these competitions, please fill the following form: https://bit.ly/48GwrMu” and make the supplied URL clickable.
 - [x] Beside the form notice, render a yellow sticky note with a visible pushpin and the text “Note: Keep in mind, if a competition requires a permission letter (surat keterangan), CONTACT THE ACADEMIC TEAM 1-2 weeks before the competition registration ends”. Bold exactly “CONTACT THE ACADEMIC TEAM 1-2 weeks before the competition registration ends”. Make this note the same size as the team-contact sticky note and match its body text size.

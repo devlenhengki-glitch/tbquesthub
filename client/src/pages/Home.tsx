@@ -171,9 +171,9 @@ export default function Home() {
   return (
     <div className="site-shell">
       <header className="site-header">
-        <a href="#top" className="brand-lockup" aria-label="Student Competition Board home">
+        <a href="#top" className="brand-lockup" aria-label="TB QuestHub home">
           <span className="brand-mark"><BookOpen size={22} strokeWidth={1.7} /><Leaf className="brand-leaf" size={12} /></span>
-          <span className="brand-name">The Opportunity <b>Index</b></span>
+          <span className="brand-name">TB <b>QuestHub</b></span>
         </a>
         <div className="header-context"><span className="context-dot" /> STUDENT COUNCIL <span className="context-divider">/</span> ACADEMIC DIVISION</div>
         <div className="header-actions">
@@ -363,7 +363,7 @@ export default function Home() {
         </div>
       </section>
       </main>
-      <footer className="site-footer"><span>THE OPPORTUNITY INDEX</span><span>One good opportunity can change everything.</span><a href="#top">BACK TO TOP <ChevronRight size={13} className="back-arrow" /></a></footer>
+      <footer className="site-footer"><span>TB QuestHub</span><span>One good opportunity can change everything.</span><a href="#top">BACK TO TOP <ChevronRight size={13} className="back-arrow" /></a></footer>
 
       {missionOpen && <div className="modal-scrim mission-modal-scrim" onMouseDown={event => { if (event.target === event.currentTarget) setMissionOpen(false); }}>
         <section className="mission-dialog" role="dialog" aria-modal="true" aria-labelledby="mission-dialog-title" aria-describedby="mission-dialog-copy">
