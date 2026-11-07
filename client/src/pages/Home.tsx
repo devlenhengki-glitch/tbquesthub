@@ -63,6 +63,7 @@ export default function Home() {
   const [description, setDescription] = useState("");
   const [deadline, setDeadline] = useState("");
   const [activeFilter, setActiveFilter] = useState<"all" | "open" | "past">("all");
+  const [missionOpen, setMissionOpen] = useState(false);
 
   useEffect(() => {
     if (!selectedFile) {
@@ -75,13 +76,16 @@ export default function Home() {
   }, [selectedFile]);
 
   useEffect(() => {
-    if (!editorModalOpen) return;
+    if (!editorModalOpen && !missionOpen) return;
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setEditorModalOpen(false);
+      if (event.key === "Escape") {
+        setEditorModalOpen(false);
+        setMissionOpen(false);
+      }
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [editorModalOpen]);
+  }, [editorModalOpen, missionOpen]);
 
   const loginMutation = trpc.competitions.login.useMutation({
     onSuccess: async result => {
@@ -350,24 +354,28 @@ export default function Home() {
             <div className="about-kicker"><span aria-hidden="true" />About NEXUS</div>
             <h2 id="about-heading">A platform by students,<br />for students.</h2>
             <p>NEXUS is an initiative by the Student Council Academic Division to connect students with opportunities beyond the classroom.</p>
-            <a className="about-mission" href="#opportunities">Our Mission <ArrowRight size={14} /></a>
+            <button className="about-mission" type="button" aria-haspopup="dialog" aria-expanded={missionOpen} onClick={() => setMissionOpen(true)}>Our Mission <ArrowRight size={14} /></button>
           </div>
           <div className="about-illustration" aria-hidden="true">
             <div className="about-illustration-disc" />
             <img src="/manus-storage/async-images/9cLJc9eR7SiwEiEVcwevcd/image-1.webp" alt="" loading="lazy" />
           </div>
-          <aside className="about-updates">
-            <h3>Stay Updated</h3>
-            <p>Get the latest competitions delivered to your inbox.</p>
-            <div className="about-email-preview" role="group" aria-label="Email sign-up preview">
-              <span>Enter your email</span>
-              <span className="about-email-arrow" aria-hidden="true"><ArrowRight size={14} /></span>
-            </div>
-          </aside>
         </div>
       </section>
       </main>
       <footer className="site-footer"><span>THE OPPORTUNITY INDEX</span><span>One good opportunity can change everything.</span><a href="#top">BACK TO TOP <ChevronRight size={13} className="back-arrow" /></a></footer>
+
+      {missionOpen && <div className="modal-scrim mission-modal-scrim" onMouseDown={event => { if (event.target === event.currentTarget) setMissionOpen(false); }}>
+        <section className="mission-dialog" role="dialog" aria-modal="true" aria-labelledby="mission-dialog-title" aria-describedby="mission-dialog-copy">
+          <button className="modal-close" type="button" aria-label="Close Our Mission" autoFocus onClick={() => setMissionOpen(false)}><X size={18} /></button>
+          <h2 id="mission-dialog-title">Our Mission</h2>
+          <div className="mission-dialog-copy" id="mission-dialog-copy">
+            <p>At TB QuestHub, our mission is to empower students to discover, pursue, and seize opportunities beyond the classroom. Through the Student Council Academic Division’s commitment to providing accessible and up-to-date information on competitions, we aim to help students develop their skills, explore their interests, gain valuable experiences, and build stronger portfolios for their future.</p>
+            <p>We believe that every student deserves the opportunity to grow, and that every great achievement begins with the willingness to try.</p>
+          </div>
+          <div className="mission-dialog-footer"><button className="button button-green" type="button" onClick={() => setMissionOpen(false)}>Close</button></div>
+        </section>
+      </div>}
 
       {editorModalOpen && <div className="modal-scrim" onMouseDown={event => { if (event.target === event.currentTarget) setEditorModalOpen(false); }}>
         <section className={`login-dialog ${editor ? "editor-dialog" : ""}`} role="dialog" aria-modal="true" aria-labelledby={editor ? "editor-modal-title" : "login-title"}>
