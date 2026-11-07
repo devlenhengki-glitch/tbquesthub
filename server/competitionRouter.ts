@@ -6,7 +6,7 @@ import {
   createAcademicEditorSession,
   createCompetition,
   deleteAcademicEditorSession,
-  deleteExpiredCompetition,
+  deleteCompetition,
   getAcademicEditorSession,
   getCompetitionById,
   getCompetitions,
@@ -168,16 +168,13 @@ export const competitionRouter = router({
       });
     }),
 
-  deleteExpired: publicProcedure
+  deleteCompetition: publicProcedure
     .input(z.object({ id: z.number().int().positive() }))
     .mutation(async ({ ctx, input }) => {
       await assertEditor(ctx.req);
       const current = await getCompetitionById(input.id);
       if (!current) throw new TRPCError({ code: "NOT_FOUND", message: "This competition is no longer on the board." });
-      if (current.deadline >= todayUtc()) {
-        throw new TRPCError({ code: "PRECONDITION_FAILED", message: "Only competitions with a passed deadline can be removed." });
-      }
-      await deleteExpiredCompetition(input.id, todayUtc());
+      await deleteCompetition(input.id);
       return { deleted: true };
     }),
 });

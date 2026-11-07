@@ -1,4 +1,4 @@
-import { and, eq, lt } from "drizzle-orm";
+import { eq, lt } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { academicEditorSessions, competitions, InsertUser, NewCompetition, users } from "../drizzle/schema";
 import { ENV } from './_core/env';
@@ -111,10 +111,10 @@ export async function createCompetition(input: NewCompetition) {
   return record;
 }
 
-export async function deleteExpiredCompetition(id: number, todayUtc: string) {
+export async function deleteCompetition(id: number) {
   const db = await getDb();
   if (!db) throw new Error("Database is not available");
-  return db.delete(competitions).where(and(eq(competitions.id, id), lt(competitions.deadline, todayUtc)));
+  return db.delete(competitions).where(eq(competitions.id, id));
 }
 
 export async function createAcademicEditorSession(tokenHash: string, expiresAt: Date) {

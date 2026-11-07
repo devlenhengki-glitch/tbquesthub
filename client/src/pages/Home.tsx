@@ -120,10 +120,10 @@ export default function Home() {
     },
     onError: error => toast.error(error.message),
   });
-  const deleteMutation = trpc.competitions.deleteExpired.useMutation({
+  const deleteMutation = trpc.competitions.deleteCompetition.useMutation({
     onSuccess: async () => {
       await utils.competitions.list.invalidate();
-      toast.success("Expired competition removed.");
+      toast.success("Competition removed.");
     },
     onError: error => toast.error(error.message),
   });
@@ -131,7 +131,6 @@ export default function Home() {
   const editor = editorStatusQuery.data?.editor === true;
   const competitions = (competitionsQuery.data ?? []) as Competition[];
   const now = todayUtc();
-  const expiredCompetitions = competitions.filter(item => item.deadline < now);
   const activeCount = competitions.filter(item => item.deadline >= now).length;
   const pastCount = competitions.length - activeCount;
   const featuredCompetitions = competitions.slice(0, 12);
@@ -162,9 +161,7 @@ export default function Home() {
   };
 
   const removeCompetition = (competition: Competition) => {
-    if (competition.deadline >= todayUtc()) return;
-    const confirmed = window.confirm(`Remove “${competition.title}” from the competition board?`);
-    if (confirmed) deleteMutation.mutate({ id: competition.id });
+    deleteMutation.mutate({ id: competition.id });
   };
 
   return (
@@ -335,8 +332,8 @@ export default function Home() {
                 <div className="dialog-emblem"><BookOpen size={23} /><Leaf size={13} /></div>
                 <div className="editor-modal-heading-copy">
                   <div className="eyebrow"><span className="eyebrow-rule" /> ACADEMIC MODE · EDITOR DESK</div>
-                  <h2 id="editor-modal-title">{editorModalView === "removal" ? <>Clear a past<br /><em>opportunity.</em></> : <>Share a new<br /><em>competition.</em></>}</h2>
-                  <p>{editorModalView === "removal" ? "Only competitions with passed deadlines can be removed." : "Add the flyer and details students need to take the next step."}</p>
+                  <h2 id="editor-modal-title">{editorModalView === "removal" ? <>Remove a posted<br /><em>competition.</em></> : <>Share a new<br /><em>competition.</em></>}</h2>
+                  <p>{editorModalView === "removal" ? "Choose any uploaded competition to remove it from the board." : "Add the flyer and details students need to take the next step."}</p>
                 </div>
                 <button className="button button-quiet removal-open-button" type="button" onClick={() => setEditorModalView(editorModalView === "removal" ? "form" : "removal")}>
                   {editorModalView === "removal" ? <ArrowRight size={15} className="back-arrow" /> : <Trash2 size={15} />}
@@ -346,21 +343,21 @@ export default function Home() {
 
               {editorModalView === "removal" ? (
                 <div className="removal-view">
-                  {expiredCompetitions.length ? (
+                  {competitions.length ? (
                     <ul className="removal-list">
-                      {expiredCompetitions.map(competition => (
+                      {competitions.map(competition => (
                         <li className="removal-item" key={competition.id}>
                           <img src={competition.flyerUrl} alt="" loading="lazy" />
-                          <div className="removal-item-copy"><span>PAST DEADLINE · {formatDate(competition.deadline)}</span><strong>{competition.title}</strong></div>
+                          <div className="removal-item-copy"><span>DEADLINE · {formatDate(competition.deadline)}</span><strong>{competition.title}</strong></div>
                           <button className="delete-button" onClick={() => removeCompetition(competition)} disabled={deleteMutation.isPending}><Trash2 size={14} /> Remove</button>
                         </li>
                       ))}
                     </ul>
                   ) : (
-                    <div className="removal-empty"><span className="empty-icon"><Check size={22} /></span><h3>Nothing to remove.</h3><p>Competitions will appear here after their deadlines have passed.</p></div>
+                    <div className="removal-empty"><span className="empty-icon"><Check size={22} /></span><h3>No competitions yet.</h3><p>New uploads will appear here with a Remove button.</p></div>
                   )}
                   <div className="editor-modal-footer">
-                    <span>Removal is limited to past-deadline listings.</span>
+                    <span>Any uploaded competition can be removed.</span>
                     <button className="button button-quiet" type="button" onClick={() => logoutMutation.mutate()} disabled={logoutMutation.isPending}><LogOut size={15} /> {logoutMutation.isPending ? "Exiting…" : "Exit Academic Mode"}</button>
                   </div>
                 </div>
