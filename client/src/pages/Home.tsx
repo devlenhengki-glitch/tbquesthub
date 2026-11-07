@@ -197,6 +197,9 @@ export default function Home() {
           </div>
           <div className="registration-notice" role="note">
             <p>Before joining any of these competitions, please fill the following form: <a href="https://bit.ly/48GwrMu" target="_blank" rel="noopener noreferrer">https://bit.ly/48GwrMu</a></p>
+          </div>
+          <div className="permission-sticky-note" role="note">
+            <span className="permission-note-pin" aria-hidden="true" />
             <p>Note: Keep in mind, if a competition requires a permission letter (surat keterangan), <strong>CONTACT THE ACADEMIC TEAM 1-2 weeks before the competition registration ends</strong></p>
           </div>
           <section className="poster-carousel" aria-label="Latest competition flyers">
