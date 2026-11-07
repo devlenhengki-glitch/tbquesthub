@@ -84,7 +84,8 @@ export default function Home() {
   }, [editorModalOpen]);
 
   const loginMutation = trpc.competitions.login.useMutation({
-    onSuccess: async () => {
+    onSuccess: async result => {
+      try { sessionStorage.setItem("academic-editor-session", result.sessionToken); } catch { /* HttpOnly cookie remains available */ }
       setPassword("");
       const status = await editorStatusQuery.refetch();
       if (!status.data?.editor) {
@@ -98,6 +99,7 @@ export default function Home() {
   });
   const logoutMutation = trpc.competitions.logout.useMutation({
     onSuccess: async () => {
+      try { sessionStorage.removeItem("academic-editor-session"); } catch { /* Continue with server-side logout */ }
       await editorStatusQuery.refetch();
       setEditorModalOpen(false);
       setEditorModalView("login");

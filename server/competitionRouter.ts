@@ -45,23 +45,21 @@ function cookieOptions(origin: string | undefined) {
   };
 }
 
-function sessionTokenFromRequest(req: { headers: { cookie?: string } }) {
-  const token = parseCookie(req.headers.cookie ?? "")[COOKIE_NAME];
-  return token && /^[A-Za-z0-9_-]{43}$/.test(token) ? token : undefined;
+function sessionTokensFromRequest(req: { headers: { cookie?: string; "x-academic-session"?: string } }) {
+  const candidates = [parseCookie(req.headers.cookie ?? "")[COOKIE_NAME], req.headers["x-academic-session"]];
+  return [...new Set(candidates.filter((token): token is string => typeof token === "string" && /^[A-Za-z0-9_-]{43}$/.test(token)))];
 }
 
 function hashSessionToken(token: string) {
   return createHash("sha256").update(token).digest("hex");
 }
 
-async function isEditorRequest(req: { headers: { cookie?: string } }) {
-  const token = sessionTokenFromRequest(req);
-  if (!token) return false;
-  const session = await getAcademicEditorSession(hashSessionToken(token));
-  return !!session && session.expiresAt.getTime() > Date.now();
+async function isEditorRequest(req: { headers: { cookie?: string; "x-academic-session"?: string } }) {
+  const sessions = await Promise.all(sessionTokensFromRequest(req).map(token => getAcademicEditorSession(hashSessionToken(token))));
+  return sessions.some(session => !!session && session.expiresAt.getTime() > Date.now());
 }
 
-async function assertEditor(req: { headers: { cookie?: string } }) {
+async function assertEditor(req: { headers: { cookie?: string; "x-academic-session"?: string } }) {
   if (!(await isEditorRequest(req))) {
     throw new TRPCError({ code: "UNAUTHORIZED", message: "Sign in to Academic Mode to continue." });
   }
@@ -143,12 +141,11 @@ export const competitionRouter = router({
       const expiresAt = new Date(Date.now() + SESSION_TTL_MS);
       await createAcademicEditorSession(hashSessionToken(token), expiresAt);
       ctx.res.cookie(COOKIE_NAME, token, cookieOptions(ctx.req.get("origin")));
-      return { editor: true };
+      return { editor: true, sessionToken: token };
     }),
 
   logout: publicProcedure.mutation(async ({ ctx }) => {
-    const token = sessionTokenFromRequest(ctx.req);
-    if (token) await deleteAcademicEditorSession(hashSessionToken(token));
+    await Promise.all(sessionTokensFromRequest(ctx.req).map(token => deleteAcademicEditorSession(hashSessionToken(token))));
     const options = cookieOptions(ctx.req.get("origin"));
     ctx.res.clearCookie(COOKIE_NAME, { ...options, maxAge: undefined });
     return { editor: false };

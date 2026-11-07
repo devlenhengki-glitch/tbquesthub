@@ -43,6 +43,7 @@ const trpcClient = trpc.createClient({
       url: "/api/trpc",
       transformer: superjson,
       headers() {
+        const requestHeaders: Record<string, string> = {};
         // Preview auto-login fallback: when the browser blocks iframe cookies
         // (Safari ITP / private browsing / WebView), the runtime mirrors the
         // session into sessionStorage so we can forward it as a Bearer token.
@@ -53,14 +54,21 @@ const trpcClient = trpc.createClient({
             const prefix = `${COOKIE_NAME}=`;
             const pair = raw.split(";").find(s => s.trim().startsWith(prefix));
             const token = pair?.trim().slice(prefix.length);
-            if (token) {
-              return { Authorization: `Bearer ${token}` };
-            }
+            if (token) requestHeaders.Authorization = `Bearer ${token}`;
           }
         } catch {
           // sessionStorage unavailable
         }
-        return {};
+        // Academic Division sessions are separate from Manus OAuth sessions.
+        // Keep this opaque token tab-scoped and use a dedicated header so it
+        // cannot overwrite the platform Authorization fallback above.
+        try {
+          const editorToken = sessionStorage.getItem("academic-editor-session");
+          if (editorToken) requestHeaders["X-Academic-Session"] = editorToken;
+        } catch {
+          // sessionStorage unavailable; the HttpOnly cookie remains the fallback
+        }
+        return requestHeaders;
       },
       fetch(input, init) {
         return globalThis.fetch(input, {
