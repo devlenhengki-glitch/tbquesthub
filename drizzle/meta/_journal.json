@@ -8,6 +8,20 @@
       "when": 1788785580464,
       "tag": "0000_initial_users",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1794049368099,
+      "tag": "0001_daffy_champions",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1794049649875,
+      "tag": "0002_loud_jocasta",
+      "breakpoints": true
     }
   ]
 }

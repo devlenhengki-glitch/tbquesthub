@@ -1,25 +1,314 @@
-import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
-import { Streamdown } from 'streamdown';
+import { useEffect, useMemo, useState } from "react";
+import {
+  ArrowRight,
+  BookOpen,
+  CalendarDays,
+  Check,
+  ChevronRight,
+  Clock3,
+  FileImage,
+  Leaf,
+  LockKeyhole,
+  LogOut,
+  Plus,
+  Sparkles,
+  UploadCloud,
+  X,
+} from "lucide-react";
+import { toast } from "sonner";
+import { trpc } from "@/lib/trpc";
 
-/**
- * All content in this page are only for example, replace with your own feature implementation
- * When building pages, remember your instructions in Frontend Workflow, Frontend Best Practices, Design Guide and Common Pitfalls
- */
+type Competition = {
+  id: number;
+  title: string;
+  description: string;
+  deadline: string;
+  flyerUrl: string;
+  createdAt: Date;
+};
+
+const todayUtc = () => new Date().toISOString().slice(0, 10);
+const formatDate = (value: string) => new Intl.DateTimeFormat("en", {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+}).format(new Date(`${value}T12:00:00`));
+const initialsFor = (index: number) => String(index + 1).padStart(2, "0");
+
+function daysUntil(deadline: string) {
+  const target = new Date(`${deadline}T00:00:00.000Z`).getTime();
+  const start = new Date(`${todayUtc()}T00:00:00.000Z`).getTime();
+  return Math.ceil((target - start) / 86_400_000);
+}
+
+function fileAsDataUrl(file: File) {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => typeof reader.result === "string" ? resolve(reader.result) : reject(new Error("Could not read that flyer."));
+    reader.onerror = () => reject(new Error("Could not read that flyer."));
+    reader.readAsDataURL(file);
+  });
+}
+
 export default function Home() {
-  // If theme is switchable in App.tsx, we can implement theme toggling like this:
-  // const { theme, toggleTheme } = useTheme();
+  const utils = trpc.useUtils();
+  const competitionsQuery = trpc.competitions.list.useQuery();
+  const editorStatusQuery = trpc.competitions.editorStatus.useQuery();
+  const [loginOpen, setLoginOpen] = useState(false);
+  const [password, setPassword] = useState("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [deadline, setDeadline] = useState("");
+  const [activeFilter, setActiveFilter] = useState<"all" | "open" | "past">("all");
+
+  useEffect(() => {
+    if (!selectedFile) {
+      setPreviewUrl(null);
+      return;
+    }
+    const objectUrl = URL.createObjectURL(selectedFile);
+    setPreviewUrl(objectUrl);
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [selectedFile]);
+
+  useEffect(() => {
+    if (!loginOpen) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setLoginOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [loginOpen]);
+
+  const loginMutation = trpc.competitions.login.useMutation({
+    onSuccess: async () => {
+      setPassword("");
+      setLoginOpen(false);
+      await editorStatusQuery.refetch();
+      toast.success("Academic Mode is on.");
+    },
+    onError: error => toast.error(error.message),
+  });
+  const logoutMutation = trpc.competitions.logout.useMutation({
+    onSuccess: async () => {
+      await editorStatusQuery.refetch();
+      toast.success("You’re back in visitor mode.");
+    },
+    onError: error => toast.error(error.message),
+  });
+  const createMutation = trpc.competitions.create.useMutation({
+    onSuccess: async () => {
+      setTitle("");
+      setDescription("");
+      setDeadline("");
+      setSelectedFile(null);
+      await utils.competitions.list.invalidate();
+      toast.success("Competition added to the board.");
+    },
+    onError: error => toast.error(error.message),
+  });
+  const deleteMutation = trpc.competitions.deleteExpired.useMutation({
+    onSuccess: async () => {
+      await utils.competitions.list.invalidate();
+      toast.success("Expired competition removed.");
+    },
+    onError: error => toast.error(error.message),
+  });
+
+  const editor = editorStatusQuery.data?.editor === true;
+  const competitions = (competitionsQuery.data ?? []) as Competition[];
+  const now = todayUtc();
+  const activeCount = competitions.filter(item => item.deadline >= now).length;
+  const pastCount = competitions.length - activeCount;
+  const visibleCompetitions = useMemo(() => {
+    return competitions.filter(item => {
+      if (activeFilter === "open") return item.deadline >= now;
+      if (activeFilter === "past") return item.deadline < now;
+      return true;
+    });
+  }, [competitions, activeFilter, now]);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!selectedFile) {
+      toast.error("Choose the competition flyer image first.");
+      return;
+    }
+    if (selectedFile.size > 8 * 1024 * 1024) {
+      toast.error("Flyer images must be 8 MB or smaller.");
+      return;
+    }
+    try {
+      const flyerDataUrl = await fileAsDataUrl(selectedFile);
+      createMutation.mutate({ title, description, deadline, flyerDataUrl });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not read that flyer.");
+    }
+  };
+
+  const removeCompetition = (competition: Competition) => {
+    if (competition.deadline >= todayUtc()) return;
+    const confirmed = window.confirm(`Remove “${competition.title}” from the competition board?`);
+    if (confirmed) deleteMutation.mutate({ id: competition.id });
+  };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <main>
-        {/* Example: lucide-react for icons */}
-        <Loader2 className="animate-spin" />
-        Example Page
-        {/* Example: Streamdown for markdown rendering */}
-        <Streamdown>Any **markdown** content</Streamdown>
-        <Button variant="default">Example Button</Button>
+    <div className="site-shell">
+      <header className="site-header">
+        <a href="#top" className="brand-lockup" aria-label="Student Competition Board home">
+          <span className="brand-mark"><BookOpen size={22} strokeWidth={1.7} /><Leaf className="brand-leaf" size={12} /></span>
+          <span className="brand-name">The Opportunity <b>Index</b></span>
+        </a>
+        <div className="header-context"><span className="context-dot" /> STUDENT COUNCIL <span className="context-divider">/</span> ACADEMIC DIVISION</div>
+        <div className="header-actions">
+          {editor ? (
+            <>
+              <span className="mode-pill"><span /> ACADEMIC MODE</span>
+              <button className="button button-quiet header-button" onClick={() => logoutMutation.mutate()} disabled={logoutMutation.isPending}>
+                <LogOut size={15} /> Exit Academic Mode
+              </button>
+            </>
+          ) : (
+            <button className="button button-dark header-button" onClick={() => setLoginOpen(true)}>
+              <LockKeyhole size={15} /> Academic Division Login
+            </button>
+          )}
+        </div>
+      </header>
+
+      <main id="top">
+        <section className="hero-section">
+          <div className="hero-copy">
+            <div className="eyebrow"><span className="eyebrow-rule" /> OPPORTUNITIES, FOUND FOR YOU</div>
+            <h1>Your next big<br /><em>idea starts here.</em></h1>
+            <p className="hero-description">A considered collection of competitions worth your time—found by the Academic Division, ready for what you’ll make of them.</p>
+            <a className="hero-link" href="#opportunities">Explore opportunities <ArrowRight size={17} /></a>
+          </div>
+          <aside className="hero-note" aria-label="Board summary">
+            <div className="note-topline"><span>FIELD NOTE No. 01</span><Sparkles size={17} /></div>
+            <div className="note-illustration" aria-hidden="true">
+              <div className="sun-disc" />
+              <div className="orbit orbit-one" /><div className="orbit orbit-two" />
+              <span className="orbit-star star-one">✳</span><span className="orbit-star star-two">✦</span>
+              <span className="note-stamp">SC<br />AD</span>
+            </div>
+            <p className="note-caption">A little curiosity<br />goes a long way.</p>
+            <div className="note-footer"><span>UPDATED BY THE ACADEMIC DIVISION</span><span>EST. 2026</span></div>
+          </aside>
+          <div className="hero-index" aria-hidden="true"><span>01</span><span className="index-line" /><span>2026</span></div>
+        </section>
+
+        <section className="board-section" id="opportunities">
+          <div className="board-heading">
+            <div>
+              <div className="eyebrow"><span className="eyebrow-rule" /> THE COMPETITION BOARD</div>
+              <h2>Find your next challenge.</h2>
+              <p className="section-intro">Good things are out there. Here are a few places to start.</p>
+            </div>
+            <div className="board-count" aria-live="polite">
+              <span className="count-number">{competitionsQuery.isLoading ? "—" : String(activeCount).padStart(2, "0")}</span>
+              <span className="count-label">OPEN<br />OPPORTUNITIES</span>
+            </div>
+          </div>
+
+          <div className="board-layout">
+            <aside className="index-rail">
+              <div className="rail-heading">IN THIS INDEX</div>
+              <button className={`rail-filter ${activeFilter === "all" ? "selected" : ""}`} onClick={() => setActiveFilter("all")}>
+                <span>All competitions</span><span>{competitions.length.toString().padStart(2, "0")}</span>
+              </button>
+              <button className={`rail-filter ${activeFilter === "open" ? "selected" : ""}`} onClick={() => setActiveFilter("open")}>
+                <span>Open now</span><span>{activeCount.toString().padStart(2, "0")}</span>
+              </button>
+              <button className={`rail-filter ${activeFilter === "past" ? "selected" : ""}`} onClick={() => setActiveFilter("past")}>
+                <span>Past deadline</span><span>{pastCount.toString().padStart(2, "0")}</span>
+              </button>
+              <div className="rail-note"><span className="rail-note-icon"><CalendarDays size={16} /></span><p>Keep an eye on the deadline. Every great entry starts with showing up.</p></div>
+              {editor && <a className="rail-add-link" href="#add-competition"><Plus size={15} /> Add a competition</a>}
+            </aside>
+
+            <div className="competition-feed">
+              {editor && <div className="editor-banner"><span className="editor-banner-icon"><Check size={15} /></span><div><b>You’re in Academic Mode.</b><span>New opportunities you add will appear on the student board.</span></div></div>}
+              {competitionsQuery.isLoading ? (
+                <div className="feed-state"><span className="loading-mark" /> Gathering opportunities…</div>
+              ) : competitionsQuery.isError ? (
+                <div className="feed-state feed-error"><p>The board couldn’t load just now.</p><button className="text-button" onClick={() => competitionsQuery.refetch()}>Try again <ChevronRight size={15} /></button></div>
+              ) : visibleCompetitions.length === 0 ? (
+                <div className="empty-state">
+                  <span className="empty-icon"><BookOpen size={25} strokeWidth={1.5} /></span>
+                  <div className="empty-kicker">NOTHING ON THIS PAGE—YET</div>
+                  <h3>{activeFilter === "past" ? "No past deadlines." : activeFilter === "open" ? "No open competitions right now." : "The next opportunity is just around the corner."}</h3>
+                  <p>{editor ? "Add a competition above and students will find it here." : "The Academic Division is always looking. Check back for the next find."}</p>
+                  {activeFilter !== "all" && <button className="text-button" onClick={() => setActiveFilter("all")}>View all competitions <ChevronRight size={15} /></button>}
+                </div>
+              ) : (
+                <div className="competition-list">
+                  {visibleCompetitions.map((competition, index) => {
+                    const expired = competition.deadline < todayUtc();
+                    const days = daysUntil(competition.deadline);
+                    return (
+                      <article className={`competition-card ${expired ? "is-expired" : ""}`} key={competition.id}>
+                        <div className="competition-card-topline"><span className="record-number">OPPORTUNITY {initialsFor(index)}</span><span className={`status-stamp ${expired ? "status-past" : days <= 7 ? "status-soon" : "status-open"}`}>{expired ? "PAST DEADLINE" : days === 0 ? "DUE TODAY" : days <= 7 ? `${days} DAYS LEFT` : "OPEN NOW"}</span></div>
+                        <div className="competition-card-content">
+                          <a className="flyer-frame" href={competition.flyerUrl} target="_blank" rel="noreferrer" aria-label={`Open flyer for ${competition.title}`}>
+                            <img src={competition.flyerUrl} alt={`Flyer for ${competition.title}`} loading="lazy" />
+                            <span className="flyer-view"><FileImage size={14} /> VIEW FLYER</span>
+                          </a>
+                          <div className="competition-details">
+                            <div className="deadline-label"><CalendarDays size={14} /> DEADLINE <span>·</span> {formatDate(competition.deadline)}</div>
+                            <h3>{competition.title}</h3>
+                            <p className="competition-description">{competition.description}</p>
+                            <div className="card-footer">
+                              <span className="posted-date"><Clock3 size={13} /> ADDED {new Intl.DateTimeFormat("en", { month: "short", day: "numeric" }).format(new Date(competition.createdAt))}</span>
+                              {editor && expired && <button className="delete-button" onClick={() => removeCompetition(competition)} disabled={deleteMutation.isPending}><X size={14} /> Remove expired</button>}
+                            </div>
+                          </div>
+                        </div>
+                      </article>
+                    );
+                  })}
+                </div>
+              )}
+
+              {editor && <section className="add-panel" id="add-competition">
+                <div className="add-panel-heading"><span className="add-panel-icon"><Plus size={17} /></span><div><div className="eyebrow"><span className="eyebrow-rule" /> EDITOR DESK</div><h3>Add an opportunity</h3><p>Share the details students need to take the next step.</p></div></div>
+                <form className="competition-form" onSubmit={handleSubmit}>
+                  <div className="form-row form-row-two">
+                    <label className="form-field"><span>Competition title <i>REQUIRED</i></span><input required maxLength={140} value={title} onChange={event => setTitle(event.target.value)} placeholder="e.g. National Science Challenge" /></label>
+                    <label className="form-field"><span>Registration deadline <i>REQUIRED</i></span><input type="date" required min={todayUtc()} value={deadline} onChange={event => setDeadline(event.target.value)} /></label>
+                  </div>
+                  <label className="form-field"><span>Description <i>REQUIRED</i></span><textarea required minLength={8} maxLength={4000} rows={4} value={description} onChange={event => setDescription(event.target.value)} placeholder="What is the competition about? Who can enter? Include the details students will want to know." /></label>
+                  <div className="form-row flyer-upload-row">
+                    <label className="form-field flyer-field"><span>Competition flyer <i>REQUIRED</i></span><span className="upload-control"><input type="file" accept="image/png,image/jpeg,image/webp" required={!selectedFile} onChange={event => setSelectedFile(event.target.files?.[0] ?? null)} /><span className="upload-icon"><UploadCloud size={18} /></span><span className="upload-copy"><b>{selectedFile ? selectedFile.name : "Choose a flyer image"}</b><small>PNG, JPG or WebP · up to 8 MB</small></span><span className="upload-action">BROWSE</span></span></label>
+                    {previewUrl && <div className="upload-preview"><img src={previewUrl} alt="Preview of the selected flyer" /><button type="button" aria-label="Remove selected flyer" onClick={() => setSelectedFile(null)}><X size={14} /></button></div>}
+                  </div>
+                  <div className="form-actions"><span>New listings appear immediately on the student board.</span><button className="button button-green" type="submit" disabled={createMutation.isPending}>{createMutation.isPending ? "Publishing…" : "Publish competition"}<ArrowRight size={16} /></button></div>
+                </form>
+              </section>}
+            </div>
+          </div>
+        </section>
+
+        <section className="closing-note"><div className="closing-mark"><Leaf size={22} /></div><p>Made for the ones who are <em>ready to try.</em></p><span>STUDENT COUNCIL · ACADEMIC DIVISION</span></section>
       </main>
+      <footer className="site-footer"><span>THE OPPORTUNITY INDEX</span><span>One good opportunity can change everything.</span><a href="#top">BACK TO TOP <ChevronRight size={13} className="back-arrow" /></a></footer>
+
+      {loginOpen && <div className="modal-scrim" onMouseDown={event => { if (event.target === event.currentTarget) setLoginOpen(false); }}>
+        <section className="login-dialog" role="dialog" aria-modal="true" aria-labelledby="login-title">
+          <button className="modal-close" aria-label="Close login dialog" onClick={() => setLoginOpen(false)}><X size={18} /></button>
+          <div className="dialog-emblem"><BookOpen size={23} /><Leaf size={13} /></div>
+          <div className="eyebrow"><span className="eyebrow-rule" /> EDITOR ACCESS</div>
+          <h2 id="login-title">A note from the<br /><em>Academic Division.</em></h2>
+          <p>Enter the division passcode to add new opportunities and tidy the board.</p>
+          <form onSubmit={event => { event.preventDefault(); loginMutation.mutate({ password }); }}>
+            <label className="form-field"><span>Division passcode</span><input autoFocus type="password" autoComplete="current-password" required value={password} onChange={event => setPassword(event.target.value)} placeholder="Enter passcode" /></label>
+            <button className="button button-green dialog-submit" type="submit" disabled={loginMutation.isPending}>{loginMutation.isPending ? "Checking…" : "Enter Academic Mode"}<ArrowRight size={16} /></button>
+          </form>
+          <div className="dialog-footnote"><LockKeyhole size={13} /> This space is for Academic Division editors.</div>
+        </section>
+      </div>}
     </div>
   );
 }

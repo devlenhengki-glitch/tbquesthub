@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm";
+import { and, eq, lt } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users } from "../drizzle/schema";
+import { academicEditorSessions, competitions, InsertUser, NewCompetition, users } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -84,8 +84,55 @@ export async function getUserByOpenId(openId: string) {
   }
 
   const result = await db.select().from(users).where(eq(users.openId, openId)).limit(1);
-
   return result.length > 0 ? result[0] : undefined;
 }
 
-// TODO: add feature queries here as your schema grows.
+export async function getCompetitions() {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  return db.select().from(competitions);
+}
+
+export async function getCompetitionById(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const rows = await db.select().from(competitions).where(eq(competitions.id, id)).limit(1);
+  return rows[0];
+}
+
+export async function createCompetition(input: NewCompetition) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const inserted = await db.insert(competitions).values(input).$returningId();
+  const id = inserted[0]?.id;
+  if (typeof id !== "number") throw new Error("Competition was not created");
+  const record = await getCompetitionById(id);
+  if (!record) throw new Error("Competition record could not be loaded");
+  return record;
+}
+
+export async function deleteExpiredCompetition(id: number, todayUtc: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  return db.delete(competitions).where(and(eq(competitions.id, id), lt(competitions.deadline, todayUtc)));
+}
+
+export async function createAcademicEditorSession(tokenHash: string, expiresAt: Date) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  await db.delete(academicEditorSessions).where(lt(academicEditorSessions.expiresAt, new Date()));
+  await db.insert(academicEditorSessions).values({ tokenHash, expiresAt });
+}
+
+export async function getAcademicEditorSession(tokenHash: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  const rows = await db.select().from(academicEditorSessions).where(eq(academicEditorSessions.tokenHash, tokenHash)).limit(1);
+  return rows[0];
+}
+
+export async function deleteAcademicEditorSession(tokenHash: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database is not available");
+  await db.delete(academicEditorSessions).where(eq(academicEditorSessions.tokenHash, tokenHash));
+}
