@@ -32,11 +32,11 @@ Three uncommon candidates (low prior likelihoods):
 
 - **Design Movement:** contemporary editorial inspired by university journals, library cards, and annotated field guides.
 - **Core Principles:** make deadlines immediately scannable; keep the board welcoming and calm; treat every flyer as authentic source material; keep editing actions unmistakably separate from student browsing.
-- **Color Philosophy:** warm paper and ink establish trust and legibility; an ownable vivid leaf-green marks active opportunities and Academic Division actions; muted rust signals a passed deadline without alarm.
-- **Layout Paradigm:** an asymmetric editorial masthead with real competition flyers layered as softly drifting cards in the first-screen hero, followed by a narrow index rail and a complete vertical opportunity list.
-- **Signature Elements:** hand-numbered opportunity labels; fine ruled dividers and paper-like card edges; pill-shaped deadline stamps.
-- **Interaction Philosophy:** clear, direct controls; password entry and publication are deliberate; delete requires a final confirmation and is only offered for expired listings.
-- **Animation:** restrained fade/slide on first render and subtle hover lift on cards; respect reduced-motion preferences; never animate data so heavily that deadlines are hard to read.
+- **Color Philosophy:** use a bright, mostly white canvas with dark ink and fresh green interface accents; let the uploaded competition flyers supply the strong colors and visual variety.
+- **Layout Paradigm:** lead with a centered headline and a wide, horizontal row of large portrait competition posters that float across the homepage; place the complete indexed listings and filters below.
+- **Signature Elements:** rounded flyer posters; readable dark-gradient title captions over each poster; a softly floating, horizontally scrollable row that hints at more competitions off-screen.
+- **Interaction Philosophy:** students can swipe or scroll through posters, then jump to a listing for its full description and deadline; password entry and publication remain deliberate, and deletion is offered only for expired listings.
+- **Animation:** cards bob gently at staggered intervals and lift slightly on hover; respect reduced-motion preferences and keep titles legible over poster art.
 - **Typography System:** use a confident editorial serif for the main headline and competition titles, paired with a neutral sans-serif for descriptions, dates, controls, and interface labels; establish clear title, section, body, and caption tiers.
 - **Brand Essence:** the Student Council's reliable field guide to the next chance to compete; **curious, organized, encouraging**.
 - **Brand Voice:** concise and student-minded. Example lines: “Find your next challenge.” “Deadlines at a glance. Opportunities in reach.”

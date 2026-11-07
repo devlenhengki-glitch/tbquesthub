@@ -2,7 +2,7 @@
 
 ## Public competition board
 - [x] Students can see the latest competitions that the Academic Division has found.
-- [x] The latest competition flyers float together in a layered, gently drifting feature at the top of the homepage, with the full opportunity list below.
+- [x] The latest competition flyers appear across the top of the homepage as large, floating poster cards in a horizontally scrollable row, similar to the supplied reference; the full listings remain below.
 - [x] Each competition shows its uploaded flyer image, competition title, description, and deadline.
 - [x] Competition entries persist so students can see the board across visits.
 

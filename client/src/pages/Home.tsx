@@ -11,7 +11,6 @@ import {
   LockKeyhole,
   LogOut,
   Plus,
-  Sparkles,
   UploadCloud,
   X,
 } from "lucide-react";
@@ -122,7 +121,7 @@ export default function Home() {
   const now = todayUtc();
   const activeCount = competitions.filter(item => item.deadline >= now).length;
   const pastCount = competitions.length - activeCount;
-  const featuredCompetitions = competitions.slice(0, 3);
+  const featuredCompetitions = competitions.slice(0, 12);
   const visibleCompetitions = useMemo(() => {
     return competitions.filter(item => {
       if (activeFilter === "open") return item.deadline >= now;
@@ -181,51 +180,58 @@ export default function Home() {
 
       <main id="top">
         <section className="hero-section">
-          <div className="hero-copy">
-            <div className="eyebrow"><span className="eyebrow-rule" /> OPPORTUNITIES, FOUND FOR YOU</div>
-            <h1>Your next big<br /><em>idea starts here.</em></h1>
-            <p className="hero-description">A considered collection of competitions worth your time—found by the Academic Division, ready for what you’ll make of them.</p>
-            <a className="hero-link" href="#opportunities">Explore opportunities <ArrowRight size={17} /></a>
+          <div className="hero-copy hero-copy-centered">
+            <div className="eyebrow"><span className="eyebrow-rule" /> ACADEMIC DIVISION PICKS</div>
+            <h1 className="poster-hero-title">Most wanted.<br /><em>Worth joining.</em></h1>
+            <p className="hero-description">The latest competitions, collected in one place. Find a flyer that sparks something.</p>
           </div>
-          <aside className="floating-stage" aria-label="Latest competitions">
-            <div className="floating-stage-heading"><span className="context-dot" /> LATEST FINDS <Sparkles size={14} /></div>
-            {featuredCompetitions.length ? (
-              <div className="floating-card-cloud">
-                {featuredCompetitions.map((competition, index) => {
-                  const expired = competition.deadline < todayUtc();
-                  const days = daysUntil(competition.deadline);
-                  return (
-                    <a
-                      className={`floating-competition floating-competition-${index + 1}`}
-                      href={competition.flyerUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      key={competition.id}
-                      aria-label={`Open flyer for ${competition.title}`}
-                    >
-                      <span className="floating-flyer"><img src={competition.flyerUrl} alt="" loading="lazy" /></span>
-                      <span className="floating-card-copy">
-                        <span className="floating-card-kicker">OPPORTUNITY {initialsFor(index)}</span>
-                        <strong title={competition.title}>{competition.title}</strong>
-                        <span className="floating-card-deadline"><CalendarDays size={12} /> {formatDate(competition.deadline)}</span>
-                      </span>
-                      <span className={`floating-status ${expired ? "floating-status-past" : days <= 7 ? "floating-status-soon" : ""}`}>
-                        {expired ? "PAST DEADLINE" : days === 0 ? "DUE TODAY" : days <= 7 ? `${days} DAYS LEFT` : "OPEN NOW"}
-                      </span>
-                    </a>
-                  );
-                })}
-              </div>
+          <section className="poster-carousel" aria-label="Latest competition flyers">
+            {competitionsQuery.isLoading ? (
+              <div className="poster-empty-state"><span className="loading-mark" />Gathering the latest flyers…</div>
+            ) : featuredCompetitions.length ? (
+              <>
+                <div className="poster-track">
+                  {featuredCompetitions.map((competition, index) => {
+                    const expired = competition.deadline < todayUtc();
+                    const days = daysUntil(competition.deadline);
+                    return (
+                      <a
+                        className="poster-card"
+                        href={`#competition-${competition.id}`}
+                        key={competition.id}
+                        aria-label={`View details for ${competition.title}`}
+                        style={{ "--poster-delay": `${(index % 5) * -0.8}s` } as React.CSSProperties}
+                      >
+                        <img src={competition.flyerUrl} alt="" loading="lazy" />
+                        <span className="poster-image-wash" />
+                        <span className="poster-topline"><span>{expired ? "PAST DEADLINE" : days <= 7 ? "CLOSING SOON" : "OPEN NOW"}</span><span>{initialsFor(index)}</span></span>
+                        <span className="poster-copy">
+                          <span className="poster-kicker">STUDENT COMPETITION</span>
+                          <strong>{competition.title}</strong>
+                          <span className="poster-deadline">DEADLINE · {formatDate(competition.deadline)}</span>
+                        </span>
+                      </a>
+                    );
+                  })}
+                </div>
+                <div className="poster-carousel-hint"><span>SCROLL OR SWIPE TO EXPLORE</span><span className="poster-hint-arrows">← &nbsp; →</span></div>
+              </>
             ) : (
-              <div className="floating-empty-card">
-                <span className="floating-empty-mark"><BookOpen size={23} /><Leaf size={13} /></span>
-                <span className="floating-card-kicker">THE OPPORTUNITY INDEX</span>
-                <strong>New finds are<br /><em>on their way.</em></strong>
-                <span className="floating-empty-caption">Academic Division discoveries appear here.</span>
-              </div>
+              <>
+                <div className="poster-track poster-track-empty" role="list" aria-label="Empty competition poster slots">
+                  {[1, 2, 3].map(slot => (
+                    <div className={`poster-card poster-placeholder poster-placeholder-${slot}`} role="listitem" key={slot}>
+                      <span className="poster-placeholder-art" aria-hidden="true"><BookOpen size={33} strokeWidth={1.3} /><Leaf size={16} /></span>
+                      <span className="poster-topline"><span>ACADEMIC DIVISION</span><span>0{slot}</span></span>
+                      <span className="poster-copy"><span className="poster-kicker">FLYER SLOT</span><strong>A new competition poster will appear here.</strong><span className="poster-deadline">WAITING FOR THE NEXT FIND</span></span>
+                    </div>
+                  ))}
+                </div>
+                <div className="poster-carousel-hint poster-empty-hint" role="status">No listings yet. Post the first competition in Academic Mode.</div>
+              </>
             )}
-          </aside>
-          <div className="hero-index" aria-hidden="true"><span>01</span><span className="index-line" /><span>2026</span></div>
+          </section>
+          <a className="hero-link hero-link-centered" href="#opportunities">Browse all competitions <ArrowRight size={17} /></a>
         </section>
 
         <section className="board-section" id="opportunities">
@@ -277,7 +283,7 @@ export default function Home() {
                     const expired = competition.deadline < todayUtc();
                     const days = daysUntil(competition.deadline);
                     return (
-                      <article className={`competition-card ${expired ? "is-expired" : ""}`} key={competition.id}>
+                      <article className={`competition-card ${expired ? "is-expired" : ""}`} id={`competition-${competition.id}`} key={competition.id}>
                         <div className="competition-card-topline"><span className="record-number">OPPORTUNITY {initialsFor(index)}</span><span className={`status-stamp ${expired ? "status-past" : days <= 7 ? "status-soon" : "status-open"}`}>{expired ? "PAST DEADLINE" : days === 0 ? "DUE TODAY" : days <= 7 ? `${days} DAYS LEFT` : "OPEN NOW"}</span></div>
                         <div className="competition-card-content">
                           <a className="flyer-frame" href={competition.flyerUrl} target="_blank" rel="noreferrer" aria-label={`Open flyer for ${competition.title}`}>
