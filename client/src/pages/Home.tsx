@@ -172,8 +172,7 @@ export default function Home() {
     <div className="site-shell">
       <header className="site-header">
         <a href="#top" className="brand-lockup" aria-label="TB QuestHub home">
-          <span className="brand-mark"><BookOpen size={22} strokeWidth={1.7} /><Leaf className="brand-leaf" size={12} /></span>
-          <span className="brand-name">TB <b>QuestHub</b></span>
+          <img className="brand-logo" src="/tb-questhub-logo-header.png" alt="TB QuestHub" width={1170} height={431} />
         </a>
         <div className="header-context"><span className="context-dot" /> STUDENT COUNCIL <span className="context-divider">/</span> ACADEMIC DIVISION</div>
         <div className="header-actions">
