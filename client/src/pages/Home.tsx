@@ -355,9 +355,12 @@ export default function Home() {
             <p>TB QuestHub is an initiative by the Student Council Academic Division to connect students with opportunities beyond the classroom.</p>
             <button className="about-mission" type="button" aria-haspopup="dialog" aria-expanded={missionOpen} onClick={() => setMissionOpen(true)}>Our Mission <ArrowRight size={14} /></button>
           </div>
-          <div className="about-illustration" aria-hidden="true">
+          <div className="about-illustration">
             <div className="about-illustration-disc" />
             <img src="/manus-storage/async-images/9cLJc9eR7SiwEiEVcwevcd/image-1.webp" alt="" loading="lazy" />
+            <div className="school-seal-badge">
+              <img src="/school-seal.png" alt="School seal" width={554} height={554} loading="lazy" />
+            </div>
           </div>
         </div>
       </section>

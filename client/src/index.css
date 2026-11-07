@@ -235,6 +235,8 @@ a { color: inherit; }
 .about-illustration { position: relative; display: flex; align-items: flex-end; justify-content: center; min-width: 0; overflow: hidden; }
 .about-illustration-disc { position: absolute; bottom: -274px; left: 50%; width: 470px; height: 470px; transform: translateX(-50%); border-radius: 50%; background: linear-gradient(145deg, #d4e0ff 0%, #9bb8f6 54%, #6f9beb 100%); }
 .about-illustration img { position: relative; z-index: 1; display: block; width: min(100%, 390px); max-height: 198px; object-fit: contain; object-position: center bottom; }
+.school-seal-badge { position: absolute; z-index: 2; top: 10px; right: 10px; display: grid; place-items: center; width: 78px; height: 78px; padding: 4px; border: 1px solid rgba(55, 112, 78, .25); border-radius: 50%; background: #fff; box-shadow: 0 8px 18px rgba(8, 27, 58, .13); }
+.school-seal-badge img { display: block; width: 100%; height: 100%; object-fit: contain; border-radius: 50%; }
 .mission-modal-scrim { z-index: 12; background: rgba(8, 20, 48, .72); }
 .mission-dialog { position: relative; width: min(100%, 720px); max-height: calc(100vh - 44px); overflow-y: auto; padding: 43px clamp(24px, 5vw, 54px) 34px; border: 1px solid #d6e0f3; border-radius: 18px; color: #172b51; background: #f7f9ff; box-shadow: 0 24px 80px rgba(8, 20, 48, .34); animation: dialog-in .22s ease-out both; }
 .mission-dialog .about-kicker { margin-bottom: 12px; }
@@ -365,6 +367,7 @@ a { color: inherit; }
   .about-illustration { min-height: 160px; max-height: 178px; }
   .about-illustration-disc { bottom: -197px; width: 340px; height: 340px; }
   .about-illustration img { width: min(100%, 320px); max-height: 176px; }
+  .school-seal-badge { top: 7px; right: 7px; width: 58px; height: 58px; }
   .mission-dialog { max-height: calc(100vh - 28px); padding: 39px 24px 25px; }
   .mission-dialog h2 { font-size: 31px; }
   .mission-dialog-copy { gap: 12px; font-size: 14px; line-height: 1.72; }
