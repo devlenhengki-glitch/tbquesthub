@@ -5,6 +5,7 @@
 - [x] The latest competition flyers appear across the top of the homepage as large, floating poster cards in a horizontally scrollable row, similar to the supplied reference; the full listings remain below.
 - [x] Each competition shows its uploaded flyer image, competition title, description, and deadline.
 - [x] Competition entries persist so students can see the board across visits.
+- [x] Immediately before the homepage poster carousel, display the text “Before joining any of these competitions, please fill the following form: https://bit.ly/48GwrMu” and make the supplied URL clickable.
 
 ## Academic Division editor access and publishing
 - [x] The website has a button that says “Academic Division Login”; it accepts the supplied passcode through a protected server-only project secret and restricts uploads to the Academic Division.
