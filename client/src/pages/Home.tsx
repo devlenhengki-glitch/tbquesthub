@@ -122,6 +122,7 @@ export default function Home() {
   const now = todayUtc();
   const activeCount = competitions.filter(item => item.deadline >= now).length;
   const pastCount = competitions.length - activeCount;
+  const featuredCompetitions = competitions.slice(0, 3);
   const visibleCompetitions = useMemo(() => {
     return competitions.filter(item => {
       if (activeFilter === "open") return item.deadline >= now;
@@ -186,16 +187,43 @@ export default function Home() {
             <p className="hero-description">A considered collection of competitions worth your time—found by the Academic Division, ready for what you’ll make of them.</p>
             <a className="hero-link" href="#opportunities">Explore opportunities <ArrowRight size={17} /></a>
           </div>
-          <aside className="hero-note" aria-label="Board summary">
-            <div className="note-topline"><span>FIELD NOTE No. 01</span><Sparkles size={17} /></div>
-            <div className="note-illustration" aria-hidden="true">
-              <div className="sun-disc" />
-              <div className="orbit orbit-one" /><div className="orbit orbit-two" />
-              <span className="orbit-star star-one">✳</span><span className="orbit-star star-two">✦</span>
-              <span className="note-stamp">SC<br />AD</span>
-            </div>
-            <p className="note-caption">A little curiosity<br />goes a long way.</p>
-            <div className="note-footer"><span>UPDATED BY THE ACADEMIC DIVISION</span><span>EST. 2026</span></div>
+          <aside className="floating-stage" aria-label="Latest competitions">
+            <div className="floating-stage-heading"><span className="context-dot" /> LATEST FINDS <Sparkles size={14} /></div>
+            {featuredCompetitions.length ? (
+              <div className="floating-card-cloud">
+                {featuredCompetitions.map((competition, index) => {
+                  const expired = competition.deadline < todayUtc();
+                  const days = daysUntil(competition.deadline);
+                  return (
+                    <a
+                      className={`floating-competition floating-competition-${index + 1}`}
+                      href={competition.flyerUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      key={competition.id}
+                      aria-label={`Open flyer for ${competition.title}`}
+                    >
+                      <span className="floating-flyer"><img src={competition.flyerUrl} alt="" loading="lazy" /></span>
+                      <span className="floating-card-copy">
+                        <span className="floating-card-kicker">OPPORTUNITY {initialsFor(index)}</span>
+                        <strong title={competition.title}>{competition.title}</strong>
+                        <span className="floating-card-deadline"><CalendarDays size={12} /> {formatDate(competition.deadline)}</span>
+                      </span>
+                      <span className={`floating-status ${expired ? "floating-status-past" : days <= 7 ? "floating-status-soon" : ""}`}>
+                        {expired ? "PAST DEADLINE" : days === 0 ? "DUE TODAY" : days <= 7 ? `${days} DAYS LEFT` : "OPEN NOW"}
+                      </span>
+                    </a>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="floating-empty-card">
+                <span className="floating-empty-mark"><BookOpen size={23} /><Leaf size={13} /></span>
+                <span className="floating-card-kicker">THE OPPORTUNITY INDEX</span>
+                <strong>New finds are<br /><em>on their way.</em></strong>
+                <span className="floating-empty-caption">Academic Division discoveries appear here.</span>
+              </div>
+            )}
           </aside>
           <div className="hero-index" aria-hidden="true"><span>01</span><span className="index-line" /><span>2026</span></div>
         </section>

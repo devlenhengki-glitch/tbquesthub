@@ -33,7 +33,7 @@ Three uncommon candidates (low prior likelihoods):
 - **Design Movement:** contemporary editorial inspired by university journals, library cards, and annotated field guides.
 - **Core Principles:** make deadlines immediately scannable; keep the board welcoming and calm; treat every flyer as authentic source material; keep editing actions unmistakably separate from student browsing.
 - **Color Philosophy:** warm paper and ink establish trust and legibility; an ownable vivid leaf-green marks active opportunities and Academic Division actions; muted rust signals a passed deadline without alarm.
-- **Layout Paradigm:** an asymmetric editorial masthead with a narrow index rail and spacious, vertically stacked opportunity cards rather than a generic centered dashboard grid.
+- **Layout Paradigm:** an asymmetric editorial masthead with real competition flyers layered as softly drifting cards in the first-screen hero, followed by a narrow index rail and a complete vertical opportunity list.
 - **Signature Elements:** hand-numbered opportunity labels; fine ruled dividers and paper-like card edges; pill-shaped deadline stamps.
 - **Interaction Philosophy:** clear, direct controls; password entry and publication are deliberate; delete requires a final confirmation and is only offered for expired listings.
 - **Animation:** restrained fade/slide on first render and subtle hover lift on cards; respect reduced-motion preferences; never animate data so heavily that deadlines are hard to read.
