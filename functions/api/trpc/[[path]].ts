@@ -98,6 +98,7 @@ const competitions=router({
 });
 const appRouter=router({competitions,auth:router({me:pub.query(()=>null),logout:pub.mutation(()=>({success:true}))})});
 export const onRequest = async ({request,env}: {request:Request;env:Env}) => {
+if (new URL(request.url).pathname === '/api/debug-env') return Response.json({ passwordConfigured: !!env.ACADEMIC_DIVISION_PASSWORD });
  if(!env.DB)return new Response('Missing DB binding',{status:500});
  const headers=new Headers();
  const path=new URL(request.url).pathname.replace(/^\/api\/trpc\/?/,'');
