@@ -101,6 +101,7 @@ export const onRequest = async ({request,env}: {request:Request;env:Env}) => {
 if (new URL(request.url).pathname === '/api/debug-env') return Response.json({ passwordConfigured: !!env.ACADEMIC_DIVISION_PASSWORD });
  if(!env.DB)return new Response('Missing DB binding',{status:500});
  const headers=new Headers();
+console.log("Academic password available:", Boolean(env.ACADEMIC_DIVISION_PASSWORD));
  const path=new URL(request.url).pathname.replace(/^\/api\/trpc\/?/,'');
  return fetchRequestHandler({endpoint:'/api/trpc',req:request,router:appRouter,createContext:()=>({db:env.DB,request,env,headers}),responseMeta:()=>({headers})});
 };
