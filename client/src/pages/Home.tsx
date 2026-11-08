@@ -357,7 +357,7 @@ export default function Home() {
           </div>
           <div className="about-illustration">
             <div className="about-illustration-disc" />
-            <img src="/manus-storage/async-images/9cLJc9eR7SiwEiEVcwevcd/image-1.webp" alt="" loading="lazy" />
+            <img src="/students.webp" alt="" loading="lazy" />
             <div className="school-seal-badge">
               <img src="/school-seal.png" alt="School seal" width={554} height={554} loading="lazy" />
             </div>
