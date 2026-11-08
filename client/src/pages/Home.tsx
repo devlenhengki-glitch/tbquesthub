@@ -152,8 +152,8 @@ export default function Home() {
       toast.error("Choose the competition flyer image first.");
       return;
     }
-    if (selectedFile.size > 8 * 1024 * 1024) {
-      toast.error("Flyer images must be 8 MB or smaller.");
+    if (selectedFile.size > 700 * 1024) {
+      toast.error("Flyer images must be 700 KB or smaller.");
       return;
     }
     try {
@@ -425,7 +425,7 @@ export default function Home() {
                   </div>
                   <label className="form-field"><span>Description <i>REQUIRED</i></span><textarea required minLength={8} maxLength={4000} rows={4} value={description} onChange={event => setDescription(event.target.value)} placeholder="What is the competition about? Who can enter? Include the details students will want to know." /></label>
                   <div className="form-row flyer-upload-row">
-                    <label className="form-field flyer-field"><span>Competition flyer <i>REQUIRED</i></span><span className="upload-control"><input type="file" accept="image/png,image/jpeg,image/webp" required={!selectedFile} onChange={event => setSelectedFile(event.target.files?.[0] ?? null)} /><span className="upload-icon"><UploadCloud size={18} /></span><span className="upload-copy"><b>{selectedFile ? selectedFile.name : "Choose a flyer image"}</b><small>PNG, JPG or WebP · up to 8 MB</small></span><span className="upload-action">BROWSE</span></span></label>
+                    <label className="form-field flyer-field"><span>Competition flyer <i>REQUIRED</i></span><span className="upload-control"><input type="file" accept="image/png,image/jpeg,image/webp" required={!selectedFile} onChange={event => setSelectedFile(event.target.files?.[0] ?? null)} /><span className="upload-icon"><UploadCloud size={18} /></span><span className="upload-copy"><b>{selectedFile ? selectedFile.name : "Choose a flyer image"}</b><small>PNG, JPG or WebP · up to 700 KB</small></span><span className="upload-action">BROWSE</span></span></label>
                     {previewUrl && <div className="upload-preview"><img src={previewUrl} alt="Preview of the selected flyer" /><button type="button" aria-label="Remove selected flyer" onClick={() => setSelectedFile(null)}><X size={14} /></button></div>}
                   </div>
                   <div className="editor-modal-footer">
